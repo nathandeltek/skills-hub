@@ -43,7 +43,7 @@ Then, in the n8n UI (`http://localhost:5678` by default):
 3. Import `n8n/workflows/example-integration-with-skill.json` and paste that ID into the "Load Skill: deltek-api-integration" node's `workflowId` field (it ships with a `REPLACE_WITH_SKILL_LOADER_WORKFLOW_ID` placeholder).
 4. Activate both, then `POST` to the webhook it creates with `{ "task": "..." }`.
 
-To try the model/provider checker, import `n8n/workflows/model-provider-checker.json`, configure the **OpenAI Chat Model** node with an n8n credential, then open the **Model Name Form** test URL and submit a model ID or display name. The workflow checks an exact match against the public models.dev catalog before the AI Agent explains the result.
+To try the model/provider checker, import `n8n/workflows/model-provider-checker.json`, configure the **Anthropic Chat Model** node with an n8n credential, then open the **Model Name Form** test URL and submit a model ID or display name. The workflow checks an exact match against the public models.dev catalog before the AI Agent explains the result.
 
 Any other workflow you build can load a skill the same way: an **Execute Workflow** node pointed at `skill-loader.json`, called with `{ "skill": "<name>" }`.
 
