@@ -1,0 +1,16 @@
+# Vendor skills are reproducible from skills.manifest.json via `npm run pull` —
+# don't commit fetched copies, just the manifest that describes them.
+/skills/vendor/*
+!/skills/vendor/.gitkeep
+
+# skills CLI staging directory (relocated into skills/vendor/ by pull-skills.sh;
+# only survives if a pull is interrupted)
+/.agents/
+
+# n8n local state
+/n8n/.env
+/n8n/n8n_data/
+
+node_modules/
+*.log
+.DS_Store

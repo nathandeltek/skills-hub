@@ -1,0 +1,43 @@
+{
+  "$schema": "./scripts/manifest.schema.json",
+  "description": "Sources for skills-hub. Each entry is a SKILL.md-standard skill (see https://agenticskills.io and https://agentskills.io) pulled from a public GitHub repo via the `skills` CLI (https://github.com/vercel-labs/skills). Run `npm run pull` to fetch/refresh everything listed here into skills/vendor/.",
+  "cliPackage": "skills",
+  "skills": [
+    {
+      "repo": "anthropics/skills",
+      "skill": "mcp-builder",
+      "category": "agents",
+      "note": "Guidance for building/validating MCP servers. Useful when an n8n integration workflow needs a custom MCP server as its tool backend."
+    },
+    {
+      "repo": "anthropics/skills",
+      "skill": "skill-creator",
+      "category": "productivity",
+      "note": "Used internally by this project to scaffold new custom skills under skills/custom/."
+    },
+    {
+      "repo": "anthropics/skills",
+      "skill": "docx",
+      "category": "documents",
+      "note": "Word document generation — useful for integration workflows that produce reports/exports."
+    },
+    {
+      "repo": "anthropics/skills",
+      "skill": "xlsx",
+      "category": "documents",
+      "note": "Spreadsheet generation/parsing — useful for data-export legs of n8n workflows."
+    },
+    {
+      "repo": "anthropics/skills",
+      "skill": "pdf",
+      "category": "documents",
+      "note": "PDF generation/manipulation — useful for document-output legs of n8n workflows."
+    },
+    {
+      "repo": "vercel-labs/agent-skills",
+      "skill": "find-skills",
+      "category": "productivity",
+      "note": "Meta-skill for discovering additional skills to add to this hub over time."
+    }
+  ]
+}

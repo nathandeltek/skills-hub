@@ -1,0 +1,14 @@
+{
+  "name": "skills-hub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reusable, SKILL.md-standard agent skills (agenticskills.io ecosystem) pulled from GitHub and mounted into n8n for use by integration workflows.",
+  "scripts": {
+    "pull": "bash scripts/pull-skills.sh",
+    "list": "bash scripts/list-skills.sh",
+    "validate": "node scripts/validate-skills.mjs",
+    "n8n:up": "docker compose -f n8n/docker-compose.yml up -d",
+    "n8n:down": "docker compose -f n8n/docker-compose.yml down"
+  },
+  "license": "UNLICENSED"
+}

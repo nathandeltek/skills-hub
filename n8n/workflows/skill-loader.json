@@ -1,0 +1,65 @@
+{
+  "name": "Skill Loader",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "name": "When Called by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [260, 300],
+      "notes": "Call this workflow with input: { \"skill\": \"<skill-name>\" }, e.g. \"find-skills\" or \"deltek-api-integration\"."
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\nconst root = process.env.SKILLS_HUB_PATH || '/skills';\nconst skill = $input.first().json.skill;\n\nif (!skill) {\n  throw new Error('Input must include a \"skill\" field, e.g. { \"skill\": \"find-skills\" }');\n}\n\nconst candidates = [\n  path.join(root, 'vendor', skill, 'SKILL.md'),\n  path.join(root, 'custom', skill, 'SKILL.md'),\n];\n\nlet filePath = null;\nfor (const candidate of candidates) {\n  if (fs.existsSync(candidate)) {\n    filePath = candidate;\n    break;\n  }\n}\n\nif (!filePath) {\n  return [{\n    json: {\n      skill,\n      found: false,\n      error: `No SKILL.md found for \"${skill}\" under ${root}/vendor or ${root}/custom`,\n    },\n  }];\n}\n\nconst raw = fs.readFileSync(filePath, 'utf8');\nconst match = raw.match(/^---\\r?\\n([\\s\\S]*?)\\r?\\n---\\r?\\n?([\\s\\S]*)$/);\n\nlet name = skill;\nlet description = '';\nlet body = raw;\n\nif (match) {\n  const frontmatter = match[1];\n  body = match[2].trim();\n  const nameMatch = frontmatter.match(/^name:\\s*(.+)$/m);\n  const descMatch = frontmatter.match(/^description:\\s*(.+)$/m);\n  if (nameMatch) name = nameMatch[1].trim();\n  if (descMatch) description = descMatch[1].trim();\n}\n\nreturn [{\n  json: {\n    skill,\n    found: true,\n    path: filePath,\n    name,\n    description,\n    body,\n    raw,\n  },\n}];"
+      },
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "name": "Load Skill",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 300],
+      "notes": "Reads /skills/vendor/<skill>/SKILL.md or /skills/custom/<skill>/SKILL.md (whichever exists) and returns its parsed frontmatter + body. Requires NODE_FUNCTION_ALLOW_BUILTIN=fs,path on the n8n container (already set in n8n/docker-compose.yml)."
+    },
+    {
+      "parameters": {},
+      "id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "name": "Return to Caller",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [740, 300],
+      "notes": "Output of this node is what the calling workflow's Execute Workflow node receives. Use json.body as the skill's instructions text, e.g. as an AI Agent node's system message."
+    }
+  ],
+  "connections": {
+    "When Called by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Load Skill",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Skill": {
+      "main": [
+        [
+          {
+            "node": "Return to Caller",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,139 @@
+{
+  "name": "Example - Integration Using a Skill",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "run-integration",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b1c2d3e4-0001-4000-8000-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 300],
+      "notes": "POST { \"task\": \"...\" } here to trigger the integration. Example body: { \"task\": \"Fetch open projects and post a summary\" }."
+    },
+    {
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_SKILL_LOADER_WORKFLOW_ID",
+          "mode": "list"
+        },
+        "workflowInputs": {
+          "value": {
+            "skill": "deltek-api-integration"
+          }
+        }
+      },
+      "id": "b1c2d3e4-0002-4000-8000-000000000002",
+      "name": "Load Skill: deltek-api-integration",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [500, 300],
+      "notes": "After importing skill-loader.json into n8n, open that workflow, copy its workflow ID from the URL, and paste it into this node's 'workflowId' field in place of REPLACE_WITH_SKILL_LOADER_WORKFLOW_ID. Swap the hardcoded skill name for whichever skill this integration needs."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "systemPrompt",
+              "type": "string",
+              "value": "={{ $json.body }}"
+            },
+            {
+              "id": "c2",
+              "name": "task",
+              "type": "string",
+              "value": "={{ $('Webhook').item.json.body.task }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1c2d3e4-0003-4000-8000-000000000003",
+      "name": "Build Prompt",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [740, 300],
+      "notes": "systemPrompt now holds the full SKILL.md body for 'deltek-api-integration', loaded from the mounted skills-hub. Feed systemPrompt + task into whichever AI Agent / LLM node this integration uses."
+    },
+    {
+      "parameters": {},
+      "id": "b1c2d3e4-0004-4000-8000-000000000004",
+      "name": "Plug in your AI Agent / LLM node here",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [980, 300],
+      "notes": "Placeholder: add your AI Agent node (e.g. @n8n/n8n-nodes-langchain.agent) or HTTP Request to your model provider here. Set its system message to {{ $json.systemPrompt }} and its user input to {{ $json.task }}. This example intentionally stops here since the right AI node/credentials depend on which model/provider you're using."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: \"received\", task: $json.task } }}",
+        "options": {}
+      },
+      "id": "b1c2d3e4-0005-4000-8000-000000000005",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1220, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Load Skill: deltek-api-integration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Skill: deltek-api-integration": {
+      "main": [
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Prompt": {
+      "main": [
+        [
+          {
+            "node": "Plug in your AI Agent / LLM node here",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plug in your AI Agent / LLM node here": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

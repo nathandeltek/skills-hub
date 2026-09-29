@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "skills-hub manifest",
+  "type": "object",
+  "required": ["skills"],
+  "properties": {
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["repo", "skill"],
+        "properties": {
+          "repo": { "type": "string", "description": "owner/repo on GitHub" },
+          "skill": { "type": "string", "description": "skill name as declared in that repo's SKILL.md frontmatter" },
+          "category": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}

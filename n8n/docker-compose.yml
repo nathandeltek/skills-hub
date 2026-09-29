@@ -1,0 +1,35 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: skills-hub-n8n
+    restart: unless-stopped
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
+      - N8N_PORT=5678
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-America/New_York}
+      # Where skills are mounted inside the container. n8n's "Read/Write Files
+      # from Disk" node and the skill-loader workflow read SKILL.md files from
+      # this path.
+      - SKILLS_HUB_PATH=/skills
+      # The skill-loader workflow's Code node reads SKILL.md files off disk,
+      # which n8n's sandboxed Code node blocks unless explicitly allowed.
+      - NODE_FUNCTION_ALLOW_BUILTIN=fs,path
+    volumes:
+      # n8n's own persisted data (credentials, executions, workflow definitions)
+      - n8n_data:/home/node/.n8n
+      # This is the actual point of this project: the skills-hub's skills/
+      # folder (vendor + custom) mounted read-only into the container so any
+      # workflow can read a SKILL.md at runtime. Re-running `npm run pull` on
+      # the host refreshes vendor skills without rebuilding the container.
+      - ../skills:/skills:ro
+      # Pre-load the example workflows on first start. n8n reads workflow
+      # JSON from this folder via the import command in docker-entrypoint
+      # override below, or they can be imported manually via the UI/CLI:
+      #   n8n import:workflow --input=/workflows/skill-loader.json
+      - ./workflows:/workflows:ro
+
+volumes:
+  n8n_data:
