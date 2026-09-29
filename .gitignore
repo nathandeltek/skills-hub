@@ -10,6 +10,7 @@
 # n8n local state
 /n8n/.env
 /n8n/n8n_data/
+/n8n/certs/
 
 node_modules/
 *.log

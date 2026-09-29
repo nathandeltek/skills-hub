@@ -45,6 +45,8 @@ Then, in the n8n UI (`http://localhost:5678` by default):
 
 To try the model/provider checker, import `n8n/workflows/model-provider-checker.json`, configure the **Anthropic Chat Model** node with an n8n credential, then open the **Model Name Form** test URL and submit a model ID or display name. The workflow checks an exact match against the public models.dev catalog before the AI Agent explains the result.
 
+For networks that inspect TLS, place the organization's trusted PEM root certificate in `n8n/certs/` and set `NODE_EXTRA_CA_CERTS=/certs/<certificate-name>.crt` in `n8n/.env`. Do not enable the HTTP Request node's **Ignore SSL Issues** option.
+
 Any other workflow you build can load a skill the same way: an **Execute Workflow** node pointed at `skill-loader.json`, called with `{ "skill": "<name>" }`.
 
 ## Adding a skill

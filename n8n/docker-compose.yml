@@ -17,6 +17,8 @@ services:
       # The skill-loader workflow's Code node reads SKILL.md files off disk,
       # which n8n's sandboxed Code node blocks unless explicitly allowed.
       - NODE_FUNCTION_ALLOW_BUILTIN=fs,path
+      # Optionally point this at a PEM CA certificate mounted from ./certs.
+      - NODE_EXTRA_CA_CERTS=${NODE_EXTRA_CA_CERTS:-/etc/ssl/certs/ca-certificates.crt}
     volumes:
       # n8n's own persisted data (credentials, executions, workflow definitions)
       - n8n_data:/home/node/.n8n
@@ -30,6 +32,8 @@ services:
       # override below, or they can be imported manually via the UI/CLI:
       #   n8n import:workflow --input=/workflows/skill-loader.json
       - ./workflows:/workflows:ro
+      # Local custom CA certificates are ignored by Git.
+      - ./certs:/certs:ro
 
 volumes:
   n8n_data:
